@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST
 from eventtracking import tracker as track
 from .api import perform_search, course_discovery_search, course_discovery_filter_fields
 from .initializer import SearchInitializer
+from .skill_tags_filter import *
 
 # log appears to be standard name used for logger
 log = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -207,6 +208,11 @@ def course_discovery(request):
         )
 
         status_code = 200
+
+        if 'skill tags' in request.POST:
+            filter_by_skills(results, request.POST['skill tags'])
+
+        add_skill_facet(results)
 
     except ValueError as invalid_err:
         results = {
